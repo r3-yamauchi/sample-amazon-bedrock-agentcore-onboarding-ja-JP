@@ -12,7 +12,7 @@ def clean_resources():
     ecr_id = config.get("agents").get(agent_name).get("aws").get("ecr_repository")
 
     if not agent_id or not ecr_id:
-        raise ValueError("agent_id or ecr_id not found in .bedrock_agentcore.yaml")
+        raise ValueError(".bedrock_agentcore.yaml に agent_id または ecr_id が見つかりません")
 
     region = boto3.Session().region_name
 
@@ -25,18 +25,18 @@ def clean_resources():
         region_name=region
     )
 
-    print(f"Deleting runtime: {agent_id}")
+    print(f"ランタイムを削除します: {agent_id}")
     runtime_delete_response = agentcore_control_client.delete_agent_runtime(
         agentRuntimeId=agent_id            
     )
 
-    print(f"Deleting ECR: {ecr_id}")
+    print(f"ECR を削除します: {ecr_id}")
     response = ecr_client.delete_repository(
         repositoryName=ecr_id.split('/')[-1],
         force=True
     )
 
-    print(f"Deleting configuration files")
+    print(f"設定ファイルを削除します")
     os.remove(".bedrock_agentcore.yaml")
     os.remove("Dockerfile")
 

@@ -1,5 +1,5 @@
 """
-Create AgentCore Gateway with Lambda target using AgentCore SDK
+AgentCore SDK を使って Lambda ターゲット付きの AgentCore Gateway を作成する
 """
 
 import json
@@ -23,19 +23,19 @@ CONFIG_FILE = Path("outbound_gateway.json")
 
 def setup_gateway(provider_name: str = PROVIDER_NAME, force: bool = False) -> dict:
     """
-    Setup Gateway with GitHub OAuth2 credential provider.
-    
-    This function:
-    1. Creates Gateway with Inbound Authorizer from 03_identity
-    2. Attach AWS Lambda to Gateway as Outbound target
-    3. Saves configuration to outbound_gateway.json
+    AgentCore Gateway を作成して Lambda ターゲットを追加するユーティリティ
 
-    Args:
-        provider_name: Name for the credential provider
-        force: Whether to force recreation of resources
+    この関数の概要（初心者向け）:
+    1. 03_identity で作成した Inbound Authorizer（Cognito）を利用して Gateway を作成
+    2. Gateway に Lambda をアウトバウンドターゲットとして登録
+    3. 作成情報を `outbound_gateway.json` に保存
 
-    Returns:
-        dict: Configuration
+        引数:
+            provider_name: 使用するクレデンシャルプロバイダ名（デフォルトを利用可）
+            force: True の場合、既存 Gateway を削除して再作成する
+
+        戻り値:
+            dict: 作成・更新した設定
     """
 
     config = load_config()
@@ -47,25 +47,25 @@ def setup_gateway(provider_name: str = PROVIDER_NAME, force: bool = False) -> di
     control_client = boto3.client('bedrock-agentcore-control', region_name=region)
     gateway_client = GatewayClient(region_name=region)
     
-    # If everything is complete and not forcing, show summary and exit
+    # すべてが既に設定済みで --force が指定されていなければ終了
     if config and has_provider and has_gateway and not force:
-        logger.info("All components already configured (use --force to recreate)")
+        logger.info("すべてのコンポーネントは既に構成されています（再作成するには --force を使用してください）")
         return config
     elif config:
         if has_gateway and force:
-            logger.info("Delete existing Gateway...")
+            logger.info("既存の Gateway を削除しています...")
             delete_gateway(gateway_client, config)
             has_gateway = False
     
     if not has_gateway:
-        logger.info("Creating Gateway with credential provider...")
+        logger.info("認証プロバイダー付きで Gateway を作成しています...")
 
-        logger.info("Loading identity configuration from file...")
+        logger.info("ファイルから identity 設定を読み込んでいます...")
         if IDENTITY_FILE.exists():
             with open(IDENTITY_FILE) as f:
                 identity_config = json.load(f)
         else:
-            raise FileNotFoundError("Identity configuration file not found")
+            raise FileNotFoundError("Identity 設定ファイルが見つかりません")
 
         gateway_name = "AWSCostEstimatorGateway"
         authorizer_config = {
@@ -84,27 +84,27 @@ def setup_gateway(provider_name: str = PROVIDER_NAME, force: bool = False) -> di
         gateway_id = gateway["gatewayId"]
         gateway_url = gateway["gatewayUrl"]
 
-        logger.info("Gateway is created!")
+        logger.info("Gateway を作成しました")
 
-        logger.info("Adding Lambda target to Gateway...")
+        logger.info("Gateway に Lambda ターゲットを追加しています...")
         tool_schema = [
             {
                 "name": "markdown_to_email",
-                "description": "Convert Markdown content to email format",
+                "description": "Markdown コンテンツをメール形式に変換します",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
                         "markdown_text": {
                             "type": "string",
-                            "description": "Markdown content to convertre to email format"
+                            "description": "メール形式に変換する Markdown コンテンツ"
                         },
                         "email_address": {
                             "type": "string",
-                            "description": "Recipient email address"
+                            "description": "受信者のメールアドレス"
                         },
                         "subject": {
                             "type": "string",
-                            "description": "Title of email"
+                            "description": "メールの件名"
                         }
                     },
                     "required": ["markdown_text", "email_address"]
@@ -112,9 +112,9 @@ def setup_gateway(provider_name: str = PROVIDER_NAME, force: bool = False) -> di
             }
         ]
 
-        # Create lambda target with required credentialProviderConfigurations
-        # Note: toolkit's create_mcp_gateway_target doesn't handle custom target_payload + credentials
-        # Reference: https://github.com/aws/bedrock-agentcore-starter-toolkit/pull/57 
+        # Lambda ターゲットを作成（credentialProviderConfigurations が必要）
+        # 注意: toolkit の create_mcp_gateway_target はカスタム target_payload + credentials を扱いません
+        # 参照: https://github.com/aws/bedrock-agentcore-starter-toolkit/pull/57 
         target_name = gateway_name + "Target"
             
         create_request = {
@@ -135,7 +135,7 @@ def setup_gateway(provider_name: str = PROVIDER_NAME, force: bool = False) -> di
 
         target_response = control_client.create_gateway_target(**create_request)            
         target_id = target_response["targetId"]
-        # Save gateway configuration immediately after creation
+        # 作成後すぐに Gateway 設定を保存
         save_config({
             "gateway": {
                 "id": gateway_id,
@@ -143,29 +143,29 @@ def setup_gateway(provider_name: str = PROVIDER_NAME, force: bool = False) -> di
                 "target_id": target_id
             }
         })
-        logger.info("✅ Gateway configuration saved")            
-        logger.info("✅ Gateway setup complete!")
-        logger.info("Next step: Run 'uv run python test_gateway.py' to test the Gateway")
+        logger.info("✅ Gateway 設定を保存しました")            
+        logger.info("✅ Gateway のセットアップが完了しました！")
+        logger.info("次のステップ: 'uv run python test_gateway.py' を実行して Gateway をテストしてください")
     
     config = load_config()
     return config
 
 
 def delete_gateway(client, config):
-    """Clean up existing Gateway resources"""
+    """既存の Gateway とターゲットを削除するユーティリティ（日本語説明）"""
     # Delete target first
     if 'target_id' in config and 'id' in config:
         client.delete_mcp_gateway_target(config['id'], config['target_id'])
-        logger.info("Deleted Gateway target")
+        logger.info("Gateway のターゲットを削除しました")
     
     # Delete Gateway
     if 'id' in config:
         client.delete_mcp_gateway(config['id'])
-        logger.info("Deleted Gateway")
+        logger.info("Gateway を削除しました")
 
 
 def load_config():
-    """Load configuration from file"""
+    """設定ファイルを読み込んで辞書で返す（outbound_gateway.json）"""
     config = {}
     with CONFIG_FILE.open('r') as f:
         config = json.load(f)
@@ -173,7 +173,7 @@ def load_config():
 
 
 def save_config(updates: Optional[dict]=None, delete_key: str=""):
-    """Update configuration file with new data"""
+    """設定ファイルを更新して保存するユーティリティ関数"""
     config = load_config()
     
     if updates is not None:
@@ -194,11 +194,11 @@ def main():
     try:
         config = setup_gateway(force=args.force)
     except Exception as e:
-        logger.warning("❌ Setup Gateway failed:")
+        logger.warning("❌ Gateway のセットアップに失敗しました:")
         logger.exception(e)
 
     console.print_json(json.dumps(config))
-    console.print(Panel("uv run python test_gateway.py", title="Let's test agent with gateway!"))
+    console.print(Panel("uv run python test_gateway.py", title="Gateway でエージェントをテストしましょう！"))
 
 
 if __name__ == "__main__":

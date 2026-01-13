@@ -1,6 +1,8 @@
 # Amazon Bedrock AgentCore オンボーディング
 
-[English](README.md) / [日本語](README_ja.md)
+[English](README_en.md) / [日本語](README_ja.md)
+
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/r3-yamauchi/sample-amazon-bedrock-agentcore-onboarding-ja-JP)
 
 **実践的でシンプル、そして実行可能なサンプル** で、すべての開発者にAmazon Bedrock AgentCoreを効果的に習得していただきます。このプロジェクトでは、AgentCoreの中核機能の実践的な実装を通じて、段階的な学習パスを提供します。
 

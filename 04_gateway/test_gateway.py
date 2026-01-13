@@ -1,10 +1,10 @@
 """
-Test the AgentCore Gateway by invoking the aws_cost_estimation tool
+Gateway を使って AWS コスト見積りツールを呼び出すテストスクリプト
 
-This script demonstrates how to:
-1. Obtain an OAuth token from Cognito
-2. Call the Gateway's MCP endpoint
-3. Invoke the aws_cost_estimation tool
+このスクリプトは次を実演します:
+1. Cognito から OAuth トークンを取得する
+2. Gateway の MCP エンドポイントを呼び出す
+3. aws_cost_estimation ツールを呼び出す
 """
 
 import json
@@ -21,7 +21,7 @@ from strands.tools.mcp import MCPClient
 from mcp.client.streamable_http import streamablehttp_client
 from bedrock_agentcore.identity.auth import requires_access_token
 
-# Configure logging with more verbose output
+# ログを詳細に出力する設定
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -47,11 +47,11 @@ with GATEWAY_CONFIG_FILE.open('r') as f:
     GATEWAY_URL = config["gateway"]["url"]
 
 
-@tool(name="cost_estimator_tool", description="Estimate cost of AWS from architecture description")
+@tool(name="cost_estimator_tool", description="アーキテクチャ記述から AWS の費用を見積もるツール")
 def cost_estimator_tool(architecture_description: str) -> str:
     region = boto3.Session().region_name
     cost_estimator = AWSCostEstimatorAgent(region=region)
-    logger.info(f"We will estimate about {architecture_description}")
+    logger.info(f"次の内容について見積りを行います: {architecture_description}")
     result = cost_estimator.estimate_costs(architecture_description)
     return result
 
@@ -61,13 +61,13 @@ def cost_estimator_tool(architecture_description: str) -> str:
     auth_flow= "M2M",
     force_authentication= False)
 async def get_access_token(access_token):
-    """Helper function to get access token"""
+    """アクセストークン取得の補助関数（デバッグ用）"""
     if access_token:
-        logger.info("✅ Successfully loaded the access token!")
+        logger.info("✅ アクセストークンを正常に取得しました！")
     return access_token
 
 def estimate_and_send(architecture_description, address):
-    logger.info("Testing Gateway with MCP client (Strands Agents)...")
+    logger.info("MCP クライアント (Strands Agents) で Gateway をテストします...")
 
     # Get the access token first
     access_token = asyncio.run(get_access_token())
@@ -79,7 +79,7 @@ def estimate_and_send(architecture_description, address):
         )
 
     mcp_client = MCPClient(create_transport)
-    logger.info("Prepare agent's tools...")
+    logger.info("エージェントのツールを準備しています...")
     tools = [cost_estimator_tool]
     with mcp_client:
         more_tools = True
@@ -94,15 +94,15 @@ def estimate_and_send(architecture_description, address):
                 pagination_token = tmp_tools.pagination_token
 
         _names = [tool.tool_name for tool in tools]
-        logger.info(f"Found the following tools: {_names}")
+        logger.info(f"見つかったツール一覧: {_names}")
 
-        logger.info("\nAsking agent to estimate AWS costs...")
+        logger.info("\nエージェントに AWS コストの見積りを依頼します...")
         agent = Agent(
             system_prompt=(
-                "Your are a professional solution architect. Please estimate cost of AWS platform."
-                "1. Please summarize customer's requirement to `architecture_description` in 10~50 words."
-                "2. Pass `architecture_description` to 'cost_estimator_tool'."
-                "3. Send estimation by `markdown_to_email`."
+                "あなたはプロのソリューションアーキテクトです。AWS プラットフォームのコストを見積もってください。"
+                "1. 顧客の要件を 10〜50 語で `architecture_description` に要約してください。"
+                "2. `architecture_description` を 'cost_estimator_tool' に渡してください。"
+                "3. `markdown_to_email` で見積り結果を送信してください。"
             ),
             tools=tools
         )
@@ -111,7 +111,7 @@ def estimate_and_send(architecture_description, address):
 
         prompt = f"requirements: {architecture_description}, address: {address}"
         result = agent(prompt) 
-        logger.info("✅ Successfully called agent!")
+        logger.info("✅ エージェント呼び出しに成功しました！")
         
         return result
 
@@ -119,17 +119,17 @@ def estimate_and_send(architecture_description, address):
 def main():
     """Main test function"""
     # Parse command line arguments
-    parser = argparse.ArgumentParser(description='Test AgentCore Gateway')
+    parser = argparse.ArgumentParser(description='AgentCore Gateway のテスト')
     parser.add_argument(
         '--architecture',
         type=str,
-        default="A simple web application with an Application Load Balancer, 2 EC2 t3.medium instances, and an RDS MySQL database in us-east-1.",
-        help='Architecture description for cost estimation.'
+        default="アプリケーションロードバランサを持ち、EC2 t3.medium 2 台と us-east-1 に配置された RDS MySQL を持つシンプルなウェブアプリケーション",
+        help='コスト見積りのためのアーキテクチャ記述'
     )
     parser.add_argument(
         '--address',
         type=str,
-        help='Email address to send estimation'
+        help='見積り結果を送信するメールアドレス'
     )
 
     args = parser.parse_args()
@@ -137,7 +137,7 @@ def main():
     try:
         estimate_and_send(args.architecture, args.address)
     except Exception as e:
-        logger.error(f"❌ Error occurred: {e}")
+        logger.error(f"❌ エラーが発生しました: {e}")
 
 if __name__ == "__main__":
     main()

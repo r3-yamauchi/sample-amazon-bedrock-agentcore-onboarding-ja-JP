@@ -1,59 +1,54 @@
-# Contributing Guidelines
+# コントリビューションガイドライン
 
-Thank you for your interest in contributing to our project. Whether it's a bug report, new feature, correction, or additional
-documentation, we greatly value feedback and contributions from our community.
+プロジェクトへの貢献に関心を持っていただきありがとうございます。バグ報告、新機能、修正、ドキュメントの追加など、コミュニティからのフィードバックと貢献を歓迎します。
 
-Please read through this document before submitting any issues or pull requests to ensure we have all the necessary
-information to effectively respond to your bug report or contribution.
+問題やプルリクエストを送る前に、本ドキュメントを一読いただき、対応に必要な情報が揃っていることを確認してください。
 
 
-## Reporting Bugs/Feature Requests
+## バグ報告 / 機能要望
 
-We welcome you to use the GitHub issue tracker to report bugs or suggest features.
+バグ報告や機能提案には GitHub の Issue トラッカーをご利用ください。
 
-When filing an issue, please check existing open, or recently closed, issues to make sure somebody else hasn't already
-reported the issue. Please try to include as much information as you can. Details like these are incredibly useful:
+Issue を作成する際は、既に同様の報告がないかオープン中または最近クローズされた Issue を確認してください。可能な限り多くの情報を提供してください。特に役立つ情報例:
 
-* A reproducible test case or series of steps
-* The version of our code being used
-* Any modifications you've made relevant to the bug
-* Anything unusual about your environment or deployment
-
-
-## Contributing via Pull Requests
-Contributions via pull requests are much appreciated. Before sending us a pull request, please ensure that:
-
-1. You are working against the latest source on the *main* branch.
-2. You check existing open, and recently merged, pull requests to make sure someone else hasn't addressed the problem already.
-3. You open an issue to discuss any significant work - we would hate for your time to be wasted.
-
-To send us a pull request, please:
-
-1. Fork the repository.
-2. Modify the source; please focus on the specific change you are contributing. If you also reformat all the code, it will be hard for us to focus on your change.
-3. Ensure local tests pass.
-4. Commit to your fork using clear commit messages.
-5. Send us a pull request, answering any default questions in the pull request interface.
-6. Pay attention to any automated CI failures reported in the pull request, and stay involved in the conversation.
-
-GitHub provides additional document on [forking a repository](https://help.github.com/articles/fork-a-repo/) and
-[creating a pull request](https://help.github.com/articles/creating-a-pull-request/).
+- 再現可能なテストケースや手順
+- 使用しているコードのバージョン
+- バグに関連する変更点
+- 環境やデプロイに関する特記事項
 
 
-## Finding contributions to work on
-Looking at the existing issues is a great way to find something to contribute on. As our projects, by default, use the default GitHub issue labels (enhancement/bug/duplicate/help wanted/invalid/question/wontfix), looking at any 'help wanted' issues is a great place to start.
+## プルリクエストでの貢献
+
+プルリクエストでの貢献は歓迎します。プルリクエストを送る前に以下を確認してください:
+
+1. 最新の `main` ブランチに対して作業していること
+2. 既存のオープン中または最近マージされたプルリクエストを確認し、同様の対応が行われていないか確認すること
+3. 大きな作業の場合は事前に Issue を立てて相談すること（時間の無駄を防げます）
+
+プルリクエストを送る手順:
+
+1. リポジトリをフォークする
+2. 変更を加える（変更点に焦点を当て、不要なコード整形は避ける）
+3. ローカルでテストが通ることを確認する
+4. 読みやすいコミットメッセージでフォークにコミットする
+5. プルリクエストを送信し、必要な説明欄に回答する
+6. 自動 CI の失敗通知に注意し、議論に積極的に参加する
+
+GitHub のフォークやプルリクエスト作成に関する公式ドキュメントも参照してください: [リポジトリのフォーク方法](https://help.github.com/articles/fork-a-repo/)、[プルリクエストの作成](https://help.github.com/articles/creating-a-pull-request/)
 
 
-## Code of Conduct
-This project has adopted the [Amazon Open Source Code of Conduct](https://aws.github.io/code-of-conduct).
-For more information see the [Code of Conduct FAQ](https://aws.github.io/code-of-conduct-faq) or contact
-opensource-codeofconduct@amazon.com with any additional questions or comments.
+## 取り組むべき貢献の見つけ方
+既存の Issue を確認することで、貢献できるタスクを見つけやすくなります。ラベル（enhancement/bug/duplicate/help wanted/invalid/question/wontfix）に基づき、`help wanted` ラベルの Issue を探すのが良い出発点です。
 
 
-## Security issue notifications
-If you discover a potential security issue in this project we ask that you notify AWS/Amazon Security via our [vulnerability reporting page](http://aws.amazon.com/security/vulnerability-reporting/). Please do **not** create a public github issue.
+## 行動規範
+このプロジェクトは [Amazon Open Source Code of Conduct](https://aws.github.io/code-of-conduct) を採用しています。詳細は [Code of Conduct FAQ](https://aws.github.io/code-of-conduct-faq) を参照するか、ご質問があれば opensource-codeofconduct@amazon.com までお問い合わせください。
 
 
-## Licensing
+## セキュリティに関する通知
+本プロジェクトに潜在的なセキュリティ問題を発見した場合は、公開の GitHub Issue を作成せず、AWS/Amazon の脆弱性報告ページを通じて報告してください: http://aws.amazon.com/security/vulnerability-reporting/
 
-See the [LICENSE](LICENSE) file for our project's licensing. We will ask you to confirm the licensing of your contribution.
+
+## ライセンス
+
+ライセンス情報については [LICENSE](LICENSE) ファイルを参照してください。貢献時にはライセンスに同意いただく必要があります。

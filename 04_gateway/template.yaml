@@ -1,12 +1,12 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  AgentCore Gateway Lambda function that converts markdown to HTML and sends via SES
+  Markdown を HTML に変換して SES で送信する AgentCore Gateway 用の Lambda 関数
 
 Parameters:
   SenderEmail:
     Type: String
-    Description: The verified sender email address for Amazon SES
+    Description: Amazon SES 用の検証済み送信元メールアドレス
     Default: ""
 
 Globals:
@@ -21,7 +21,7 @@ Resources:
     Properties:
       CodeUri: src/
       Handler: app.lambda_handler
-      Description: Lambda function that converts markdown to HTML and sends via SES
+      Description: Markdown を HTML に変換して SES で送信する Lambda 関数
       Environment:
         Variables:
           SES_SENDER_EMAIL: !Ref SenderEmail

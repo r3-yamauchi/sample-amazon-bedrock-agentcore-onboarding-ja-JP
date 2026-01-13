@@ -1,95 +1,95 @@
-# Amazon Bedrock AgentCore Development Guide
+# Amazon Bedrock AgentCore 開発ガイド
 
-## Project Overview
-This project provides practical, simple, and runnable code examples for onboarding developers to Amazon Bedrock AgentCore. The goal is to publish `agentcore_blog_ja.md` with perfect examples.
+## プロジェクト概要
+このプロジェクトは、開発者が Amazon Bedrock AgentCore にスムーズに入門できるよう、実用的でシンプル、かつ実行可能なコード例を提供します。目標は、実例が揃った `agentcore_blog_ja.md` を公開することです。
 
-## Key Development Principles
+## 開発の主要原則
 
-### 1. Runnable Code First
-- Always refer to the latest AWS documentation before implementation
-- Verify all code examples work with current AWS SDK versions
-- Test implementations against live AWS services
-- Include complete, executable examples (not fragments)
-- Use meaningful, descriptive filenames
+### 1. 実行可能なコードを最優先
+- 実装前に常に最新の AWS ドキュメントを参照して、コードの信頼性を担保してください
+- すべてのコード例が現在の AWS SDK バージョンで動作することを検証してください
+- 可能な場合はライブの AWS サービスを使って実装をテストしてください
+- コード断片ではなく、完全に実行可能なサンプルを含めてください
+- 目的が明確な説明的なファイル名を使用してください
 
-### 2. Practical Implementation
-- Add comprehensive comments and logging for monitoring/debugging
-- Include error handling patterns and troubleshooting guidance
-- Provide real-world use cases and scenarios
-- Create progressive learning paths with numbered sequences (01-, 02-, 03-)
+### 2. 実践的な実装
+- 監視やデバッグのために包括的なコメントとログ出力を追加してください
+- エラーハンドリングパターンやトラブルシューティングの手引きを含めてください
+- 実際のユースケースやシナリオを提示してください
+- 01-, 02-, 03- のような番号付きの段階的学習パスを作成してください
 
-### 3. Simple and Sophisticated
-- Keep code simple to minimize learning cost
-- Use clear, descriptive variable and function names
-- Follow consistent coding patterns
-- Prefer flat, simple directory structures
+### 3. シンプルで洗練された設計
+- 学習コストを下げるためにコードはシンプルに保ってください
+- 明確で説明的な変数名・関数名を使用してください
+- プロジェクト全体で一貫したコーディングパターンに従ってください
+- 平坦でシンプルなディレクトリ構造を推奨します
 
-## Code Quality Requirements
+## コード品質の要件
 
-### Must-Have Features
-- **No dummy data ever** - Use real API connections and service integrations
-- **Proper resource cleanup** - Use try/finally blocks for resource management
-- **Meaningful naming** - Use descriptive filenames like `cost_estimator_agent.py`
-- **Separated configuration** - Extract prompts and constants to pass linting tools
-- **Follow language conventions** - Use underscores for Python package compatibility
+### 必須の特徴
+- **ダミーデータ禁止** — 実際の API 接続やサービス統合を使用してください
+- **適切なリソースクリーンアップ** — try/finally ブロック等でリソース管理を行ってください
+- **意味のある命名** — `cost_estimator_agent.py` のように説明的なファイル名を使用してください
+- **設定とロジックを分離** — プロンプトや定数を抽出してリンタに通せるようにする
+- **言語の慣習に従う** — Python 互換性のためにアンダースコアを使用する
 
-### Error Handling
-- Implement proper exception handling patterns
-- Include retry logic with exponential backoff
-- Provide clear error messages and resolution steps
-- Handle common AWS service errors
+### エラーハンドリング
+- 適切な例外処理パターンを実装してください
+- 指数バックオフを伴う再試行ロジックを含めてください
+- 明確なエラーメッセージと解決手順を提供してください
+- 一般的な AWS サービスエラーに対処する方法を示してください
 
-### Logging and Monitoring
-- Implement structured logging for all operations
-- Include debug-level logging for development
-- Provide CloudWatch integration examples
-- Show how to monitor AgentCore performance
+### ロギングと監視
+- すべての操作で構造化ログを実装してください
+- 開発環境向けにデバッグレベルのログも含めてください
+- CloudWatch 統合の例を提供してください
+- AgentCore のパフォーマンス監視方法を示してください
 
-## Testing Commands
-When implementing code, run these commands to ensure code quality:
-- **Linting**: `ruff check` (if Python code)
-- **Type checking**: Check for appropriate type checking commands in the project
-- **Testing**: Look for test scripts in the project structure
+## テストコマンド
+実装時に以下を実行して品質を確認してください:
+- **リンティング**: `ruff check`（Python の場合）
+- **型チェック**: プロジェクトで適切な型チェックコマンドを確認してください
+- **テスト**: プロジェクト内のテストスクリプトを参照してください
 
-## Execution Environment
-- Use `uv run` commands for Python execution
-- Match actual project setup and directory structures
-- List actual AWS permissions and service requirements
-- Reference specific SDK versions
+## 実行環境
+- Python 実行には `uv run` コマンドを使用してください
+- 実際のプロジェクト構成とディレクトリ構造に合わせてください
+- 必要な AWS 権限とサービス要件を明示してください
+- 特定の SDK バージョンを参照してください
 
-## Documentation Standards
-Every code example must include:
-- Purpose and use case explanation
-- Required AWS permissions and setup
-- Step-by-step execution instructions
-- Expected outputs and results
-- Common troubleshooting scenarios
+## ドキュメント基準
+すべてのコード例は以下を含むこと:
+- 目的とユースケースの説明
+- 必要な AWS 権限とセットアップ
+- 実行手順のステップバイステップ
+- 期待される出力と結果
+- よくあるトラブルシューティング例
 
-## Resource Management
-- Always implement cleanup for AWS resources
-- Follow service-specific cleanup patterns (e.g., AgentCore Code Interpreter requires explicit session stopping)
-- Document resource lifecycle and consequences of not cleaning up
-- Handle multi-service coordination complexity
+## リソース管理
+- AWS リソースのクリーンアップを必ず実装してください
+- サービス固有のクリーンアップ手順に従ってください（例: AgentCore Code Interpreter はセッション停止が必要）
+- リソースのライフサイクルとクリーンアップしない場合の影響を文書化してください
+- マルチサービス連携の複雑さに対処してください
 
-## Implementation Checklist
-Before completing any code example:
-- [ ] Code runs successfully with latest AWS SDK
-- [ ] All dependencies are clearly documented
-- [ ] Comprehensive comments explain each major step
-- [ ] Logging is implemented for debugging
-- [ ] Error handling covers common scenarios
-- [ ] No dummy or placeholder data
-- [ ] Proper resource cleanup with try/finally blocks
-- [ ] Meaningful filenames that indicate purpose
-- [ ] Separated configuration for linting compliance
-- [ ] Correct execution commands using `uv run`
-- [ ] Service-specific patterns followed
+## 実装チェックリスト
+完了前に次を確認してください:
+- [ ] 最新の AWS SDK でコードが正常に動作する
+- [ ] すべての依存関係が明確に記載されている
+- [ ] 主要な手順に対する包括的なコメントがある
+- [ ] デバッグ用のロギングが実装されている
+- [ ] エラーハンドリングが一般的なケースをカバーしている
+- [ ] ダミーやプレースホルダデータがない
+- [ ] try/finally 等で適切なリソースクリーンアップが実装されている
+- [ ] 目的を示す意味のあるファイル名を使用している
+- [ ] リンティングに対応するために設定を分離している
+- [ ] `uv run` を用いた正しい実行コマンドが示されている
+- [ ] サービス固有のベストプラクティスに従っている
 
-## Project Structure
-- Start simple, evolve as needed
-- Use numbered sequences for learning paths
-- One concept per directory
-- Documentation-first approach (create README.md files first)
-- Meaningful names over conventions
+## プロジェクト構成
+- シンプルに始め、必要に応じて拡張する
+- 学習パスは番号付きで整理する
+- 各ディレクトリは一つのコンセプトに集中する
+- ドキュメントファースト（まず README.md を作成）
+- 慣習より意味のある名前を優先する
 
-Remember: The goal is to make Amazon Bedrock AgentCore accessible to developers of all skill levels through practical, runnable, and well-documented examples.
+このプロジェクトの目標は、実用的で実行可能、かつ十分に文書化された例を通じて、あらゆるレベルの開発者が Amazon Bedrock AgentCore を利用できるようにすることです。

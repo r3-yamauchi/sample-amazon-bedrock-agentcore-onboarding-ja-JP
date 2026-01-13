@@ -1,5 +1,5 @@
 def main():
-    print("Hello from sample-amazon-bedrock-agentcore-onboarding!")
+    print("sample-amazon-bedrock-agentcore-onboarding へようこそ！")
 
 
 if __name__ == "__main__":

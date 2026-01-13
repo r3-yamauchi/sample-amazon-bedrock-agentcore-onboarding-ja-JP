@@ -1,14 +1,13 @@
 """
-Setup OAuth2 credential provider for AgentCore Identity using existing Cognito configuration.
+既存の Cognito 設定を利用して AgentCore Identity 用の OAuth2 クレデンシャルプロバイダをセットアップします。
 
-This script creates an OAuth2 credential provider that integrates with the existing
-Cognito M2M OAuth setup from the gateway configuration. The provider enables
-AgentCore Identity to securely manage access tokens for authenticated API calls.
+このスクリプトは、ゲートウェイ構成にある Cognito の M2M OAuth 設定と統合する OAuth2 クレデンシャルプロバイダを作成します。
+このプロバイダにより、AgentCore Identity は認証 API 呼び出しのためのアクセストークンを安全に管理できます。
 
-Prerequisites:
-- AWS credentials configured with bedrock-agentcore-control permissions
+前提条件:
+- `bedrock-agentcore-control` 権限を持つ AWS 認証情報が設定されていること
 
-Usage:
+使い方:
     uv run python 03_identity/setup_inbound_authorizer.py
 """
 
@@ -27,7 +26,7 @@ from bedrock_agentcore_starter_toolkit.operations.gateway.client import GatewayC
 import yaml
 
 
-# Configure logging for clear debugging
+# デバッグのためのロギング設定
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
 
@@ -36,19 +35,19 @@ CONFIG_FILE = Path("inbound_authorizer.json")
 
 def setup_oauth2_credential_provider(provider_name: str = PROVIDER_NAME, force: bool = False) -> dict:
     """
-    Setup OAuth2 credential provider for AgentCore Identity.
-    
-    This function:
-    1. Create Cognito user pool and app client
-    2. Creates OAuth2 credential provider using Cognito discovery URL
-    3. Saves configuration to inbound_authorizer.json
-    
-    Args:
-        provider_name: Name for the credential provider
-        force: Whether to force recreation of resources
+    AgentCore Identity 用の OAuth2 クレデンシャルプロバイダをセットアップします（日本語説明）
 
-    Returns:
-        dict: Configuration
+    この関数の流れ（初心者向け）:
+    1. Cognito ユーザプールとアプリクライアントを作成または検出する
+    2. Cognito の discovery URL を用いて OAuth2 クレデンシャルプロバイダを作成する
+    3. 生成した設定を `inbound_authorizer.json` に保存する
+
+    引数:
+        provider_name: 作成するクレデンシャルプロバイダの名前
+        force: True の場合、既存リソースを強制的に再作成する
+
+    戻り値:
+        dict: 作成・更新した設定（JSON 互換の辞書）
     """
 
     config = load_config()
@@ -59,27 +58,27 @@ def setup_oauth2_credential_provider(provider_name: str = PROVIDER_NAME, force: 
 
     identity_client = boto3.client('bedrock-agentcore-control', region_name=region)
 
-    # If everything is complete and not forcing, show summary and exit
+    # すべてが既に構成されており、--force が指定されていない場合はサマリを表示して終了
     if config and has_cognito and has_provider and not force:
-        logger.info("All components already configured (use --force to recreate)")
+        logger.info("すべてのコンポーネントは既に構成済みです（再作成するには --force を指定してください）")
         return config
     elif config:
         if has_provider and force:
-            logger.info("Delete existing OAuth2 credential provider...")
+            logger.info("既存の OAuth2 クレデンシャルプロバイダを削除します...")
             identity_client.delete_oauth2_credential_provider(name=provider_name)
             save_config(delete_key="provider")
             has_provider = False
         if has_cognito and force:
-            logger.info("Delete existing Cognito OAuth authorizer...")
+            logger.info("既存の Cognito OAuth オーソライザを削除します...")
             cleanup_cognito_resources(config['cognito'])
             save_config(delete_key="cognito")
             has_cognito = False
     
     cognito_config = {}
     if not has_cognito:
-        logger.info("Creating Cognito OAuth authorizer...")
+        logger.info("Cognito OAuth オーソライザを作成しています...")
         gateway_client = GatewayClient(region_name=region)
-        # Use simple interface for creating OAuth authorizer with Cognito from Gateway Client
+        # Gateway Client の簡易インターフェースを使って Cognito による OAuth オーソライザを作成
         cognito_result = gateway_client.create_oauth_authorizer_with_cognito("InboundAuthorizerForCostEstimatorAgent")
         user_pool_id = cognito_result['client_info']['user_pool_id']
         discovery_url = f"https://cognito-idp.{region}.amazonaws.com/{user_pool_id}/.well-known/openid-configuration"
@@ -93,11 +92,11 @@ def setup_oauth2_credential_provider(provider_name: str = PROVIDER_NAME, force: 
             "region": region
         }
         save_config({"cognito" : cognito_config})
-        logger.info("✅ Cognito configuration saved")
+        logger.info("✅ Cognito の設定を保存しました")
 
     provider_config = {}
     if not has_provider:
-        logger.info("Creating Identity Provider ...")
+        logger.info("Identity プロバイダを作成しています...")
         # Create new credential provider configuration
         # https://docs.aws.amazon.com/bedrock-agentcore-control/latest/APIReference/API_CustomOauth2ProviderConfigInput.html
         # https://docs.aws.amazon.com/bedrock-agentcore-control/latest/APIReference/API_Oauth2Discovery.html
@@ -124,8 +123,8 @@ def setup_oauth2_credential_provider(provider_name: str = PROVIDER_NAME, force: 
             "arn" : response['credentialProviderArn']
         }
         save_config({"provider": provider_config})
-        logger.info("✅ Provider configuration saved")
-        
+        logger.info("✅ プロバイダ設定を保存しました")
+
         return load_config()
 
 
@@ -181,10 +180,21 @@ def cleanup_cognito_resources(cognito_config):
 
 
 def wait_for_oidc_endpoint(oidc_url, max_wait=600, interval=30):
-    """Wait for OIDC discovery endpoint to become available
-    
-    Based on real-world testing, OIDC endpoints can take 5+ minutes to become available
-    due to DNS propagation and service initialization delays.
+    """
+    OIDC の discovery エンドポイントが有効になるまで待機するユーティリティ
+
+    説明:
+    - Cognito 等の OIDC discovery エンドポイントは DNS やサービス初期化のために
+      数分間応答しない場合があります。テスト環境では 5 分以上かかることもあります。
+    - `max_wait` 秒まで繰り返しチェックし、利用可能になると True を返します。
+
+    引数:
+        oidc_url: OIDC discovery の URL
+        max_wait: 最大待機秒数（デフォルト 600 秒）
+        interval: 再試行間隔（秒、デフォルト 30 秒）
+
+    戻り値:
+        bool: エンドポイントが利用可能になったら True、タイムアウト時は False
     """
     start_time = time.time()
     attempt = 1
@@ -226,14 +236,14 @@ def wait_for_oidc_endpoint(oidc_url, max_wait=600, interval=30):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Create AgentCore Identity for Runtime')
-    parser.add_argument('--force', action='store_true', help='Force recreation of resources')
+    parser = argparse.ArgumentParser(description='Runtime 用 AgentCore Identity を作成する')
+    parser.add_argument('--force', action='store_true', help='リソースを強制的に再作成する')
     args = parser.parse_args()
     console = Console()
 
     runtime_path = Path("../02_runtime/.bedrock_agentcore.yaml")
     if not runtime_path.exists():
-        logger.warning("Please deploy Runtime before setting Identity.")
+        logger.warning("先に Runtime をデプロイしてください。Identity 設定を行う前に Runtime が必要です。")
         return None
     
     try:
@@ -243,7 +253,7 @@ def main():
         logger.exception(e)
 
     if config and "runtime" not in config:
-        logger.info("Creating Runtime with Identity...")
+        logger.info("Identity を利用する Runtime を作成しています...")
         with runtime_path.open() as f:
             runtime_config = yaml.safe_load(f) or {}
 
@@ -290,7 +300,7 @@ def main():
         logger.info("✅ Runtime configuration saved")
 
     console.print_json(json.dumps(load_config()))
-    console.print(Panel("uv run python test_identity_agent.py", title="Let's test agent with identity!"))
+    console.print(Panel("uv run python test_identity_agent.py", title="Identity を使ったエージェントをテストしましょう！"))
 
 
 if __name__ == "__main__":
